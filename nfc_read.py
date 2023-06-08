@@ -10,3 +10,5 @@ while True:
         print("NFC 정보 : ", target)
         
     time.sleep(0.1)
+    
+    ./configure --prefix=/usr --sysconfdir=/etc --with-drivers=all
