@@ -12,3 +12,5 @@ while True:
     time.sleep(0.1)
     
     ./configure --prefix=/usr --sysconfdir=/etc --with-drivers=all
+    configure: error: cannot find required auxiliary files: config.guess config.sub compile ar-lib missing install-sh
+
