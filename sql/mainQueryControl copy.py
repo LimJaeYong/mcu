@@ -40,15 +40,15 @@ def insertQ(name, uid, room):
 
 
 def selectQ(uid):
-    selectQuery = "SELECT IF(nfc_id ="+uid+", 'Y', 'N') from usertable;"
+    selectQuery = "SELECT IF('"+uid+"' in (SELECT nfc_id from usertable), 'Y', 'N');"
     result = executeQ(connection, selectQuery)
     print(result[0][0])
     if result[0][0] == 'Y':
         print("Access granted.")
-        name = "SELECT name FROM usertable WHERE uid = "+uid+";"
+        name = "SELECT name FROM usertable WHERE uid = '"+uid+"';"
         status = "TRUE"
         # if this user was already granted and pass the gate
-        if executeQ(connection, "SELECT pass_gate from usertable WHERE nfc_id ="+uid+";")[0][0]:
+        if executeQ(connection, "SELECT pass_gate from usertable WHERE nfc_id ='"+uid+"';")[0][0]:
             # Switch the pass_gate status and notify that this user is now Exit the gate
             status = "FALSE"
             print("Good Bye.")
