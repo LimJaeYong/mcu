@@ -28,6 +28,13 @@ def Connect_DB():
     except mc.Error as e:
         print("Connection error: ", e)
 
+# insert query into database
+
+def insertQ(name, uid, room):
+    insertQuery = "INSERT INTO usertable (user_name, nfc_id, room) VALUE('"+name+"','"+uid+"','"+room+"');"
+    executeQ(connection, insertQuery)
+
+
 # select query from usertable to check if uid is vaild
 
 
@@ -80,23 +87,25 @@ def executeQ(connection, query):
 
 if __name__ == "__main__":
     connection = Connect_DB()
+    insertQ("Lim Jae Yong", "7Áãþ", "testroom")
 
-    while (True):
-        # uid = nfc.run()
-        # if selectQ(uid):
-        #     print("Good Day, ", name)
-        # else:
-        #     print("Please try again.")
-        #     continue
+    # while (True):
+    #     # uid = nfc.run()
+    #     # if selectQ(uid):
+    #     #     print("Good Day, ", name)
+    #     # else:
+    #     #     print("Please try again.")
+    #     #     continue
+
+    #     # insert query
+        
 
 
 
-
-
-        # Test
-        selectQ("0000")
-        # Test: Not passing gate yet
-        selectQ("1111")
-        # Test: Already pass the gate and ready to Exit the gate
-        #selectQ("1111")
-        break
+    #     # Test
+    #     selectQ("0000")
+    #     # Test: Not passing gate yet
+    #     selectQ("1111")
+    #     # Test: Already pass the gate and ready to Exit the gate
+    #     #selectQ("1111")
+    #     break
