@@ -1,10 +1,10 @@
 # Have to import nfc read module to read card information
-#import nfc_read as nfc
+import nfc_read as NFC
 import mysql.connector as mc
-
+import time
 
 # Initialize nfc
-#nfc = nfc.__init__()
+nfc = NFC.nfc()
 
 
 # test uid
@@ -18,9 +18,9 @@ name = ''
 def Connect_DB():
     try:
         connectInfo = mc.connect(
-            user='testAccount_mac',
+            user='testAccount_mcu',
             password='0000',
-            host='dlawodyd.iptime.org',
+            host='1.231.83.240',
             database='resident'
         )
         return connectInfo
@@ -28,26 +28,27 @@ def Connect_DB():
     except mc.Error as e:
         print("Connection error: ", e)
 
+
 # insert query into database
 
 def insertQ(name, uid, room):
-    insertQuery = "INSERT INTO usertable (user_name, nfc_id, room) VALUE('"+name+"','"+uid+"','"+room+"');"
+    insertQuery = "INSERT INTO usertable (user_name, nfc_id, room) VALUE('" + \
+        name+"','"+uid+"','"+room+"');"
     executeQ(connection, insertQuery)
-
 
 # select query from usertable to check if uid is vaild
 
 
 def selectQ(uid):
-    selectQuery = "SELECT IF(nfc_id ="+uid+", 'Y', 'N') from usertable;"
+    selectQuery = "SELECT IF('"+uid+"' in (SELECT nfc_id from usertable), 'Y', 'N');"
     result = executeQ(connection, selectQuery)
     print(result[0][0])
     if result[0][0] == 'Y':
         print("Access granted.")
-        name = "SELECT name FROM usertable WHERE uid = "+uid+";"
+        name = "SELECT name FROM usertable WHERE uid = '"+uid+"';"
         status = "TRUE"
         # if this user was already granted and pass the gate
-        if executeQ(connection, "SELECT pass_gate from usertable WHERE nfc_id ="+uid+";")[0][0]:
+        if executeQ(connection, "SELECT pass_gate from usertable WHERE nfc_id ='"+uid+"';")[0][0]:
             # Switch the pass_gate status and notify that this user is now Exit the gate
             status = "FALSE"
             print("Good Bye.")
@@ -63,10 +64,9 @@ def selectQ(uid):
 
 def updateQ(uid, status):
     try:
-        updateQuery = "UPDATE usertable SET pass_gate = " + \
-            status + " WHERE nfc_id ="+uid+";"
+        updateQuery = "UPDATE usertable SET pass_gate = " +status+ " WHERE nfc_id ='"+uid+"';"
         executeQ(connection, updateQuery)
-        print("Update complete.")
+        #print("Update complete.")
     except mc.Error as e:
         print(e)
 
@@ -87,25 +87,24 @@ def executeQ(connection, query):
 
 if __name__ == "__main__":
     connection = Connect_DB()
-    insertQ("Lim Jae Yong", "7Áãþ", "testroom")
+    #insertQ("Lim Jae Yong", nfc.run(), "testroom")
+    #insertQ("UserNotPassGate", nfc.run(), "testroom")
 
-    # while (True):
-    #     # uid = nfc.run()
-    #     # if selectQ(uid):
-    #     #     print("Good Day, ", name)
-    #     # else:
-    #     #     print("Please try again.")
-    #     #     continue
+    while (True):
+        uid = nfc.run()
+        if selectQ(uid):
+            #print("Good Day, ", name)
+            time.sleep(2)
+            continue
+        else:
+            print("Please try again.")
+            time.sleep(2)
+            continue
 
-    #     # insert query
-        
-
-
-
-    #     # Test
-    #     selectQ("0000")
-    #     # Test: Not passing gate yet
-    #     selectQ("1111")
-    #     # Test: Already pass the gate and ready to Exit the gate
-    #     #selectQ("1111")
-    #     break
+        # Test
+        # selectQ("0000")
+        # Test: Not passing gate yet
+        # selectQ("1111")
+        # Test: Already pass the gate and ready to Exit the gate
+        # selectQ("1111")
+        # break
